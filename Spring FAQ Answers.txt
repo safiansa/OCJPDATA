@@ -1,0 +1,229 @@
+1.	Discuss the Life cycle of Beans in Spring factory container?
+ANSWER :: 
+	To define setup and teardown for a bean, we simply declare the <bean> with
+	initmethod and/or destroy-method parameters. The init-method attribute specifies 
+	a method that is to be called on the bean immediately upon instantiation.
+	Similarly, destroymethod specifies a method that is called just before a bean 
+	is removed from the container.
+	
+	void afterPropertiesSet() throws Exception;
+	
+	Thus, you can simply implement the above interface and initialization
+	work can be done inside afterPropertiesSet() method as follows −
+	
+	public class ExampleBean implements InitializingBean {
+   public void afterPropertiesSet() {
+      // do some initialization work
+	}
+	}
+	
+	<bean id = "exampleBean" class = "examples.ExampleBean" init-method = "init"/>
+	
+	void destroy() throws Exception;
+	
+	public class ExampleBean implements DisposableBean {
+   public void destroy() {
+      // do some destruction work
+	}
+	}
+	
+	<bean id = "exampleBean" class = "examples.ExampleBean" destroy-method = "destroy"/>
+	
+############################################################################################################
+@PostConstruct
+	@PostConstruct annotation defines a method as initialization method of a spring bean which runs after
+	dependency injection is completed. @PostConstruct is annotation form of init-method which is an attribute
+	of bean tag. @PostConstruct method is used to validate properties of bean or initializing any task. 
+	In our bean, there must be only one method annotated with @PostConstruct annotation. 
+	The method cannot be static.
+@PreDestroy
+	@PreDestroy annotation declares a method that is executed just before the bean is destroyed by container.
+	The method annotated with @PreDestroy is used to release the resources or preforming any destruction task 
+	before the spring container destroyed the bean. There must be only one method in our bean annotated with
+	@PreDestroy. The method cannot be static. @PreDestroy is annotation form of destroy-method which is an 
+	attribute of bean tag.
+
+############################################################################################################
+			BEAN FACTORY AND APPLICATION CONTEXT
+	
+	1/Bean Factory :: 
+	There are a number of implementations of the BeanFactory interface that are come straight out-of-the-box 
+	with Spring. The most commonly used BeanFactory implementation is the XmlBeanFactory class. This container 
+	reads the configuration metadata from an XML file and uses it to create a fully configured system or application.
+	
+	public class MainApp { 
+   public static void main(String[] args) { 
+      XmlBeanFactory factory = new XmlBeanFactory (new ClassPathResource("Beans.xml")); 
+      HelloWorld obj = (HelloWorld) factory.getBean("helloWorld");    
+      obj.getMessage();    
+		}
+	}  
+
+	The ApplicationContext container includes all functionality of the BeanFactorycontainer, so it is generally
+	recommended over BeanFactory. BeanFactory can still be used for lightweight applications like mobile devices
+	or applet-based applications where data volume and speed is significant.
+	
+	SOME OF THE IMPORTANT PROPERTIES OF A BEAN -->
+	
+			1	
+		class
+
+		This attribute is mandatory and specifies the bean class to be used to create the bean.
+
+		2	
+		name
+
+		This attribute specifies the bean identifier uniquely. In XMLbased configuration metadata,
+		you use the id and/or name attributes to specify the bean identifier(s).
+
+		3	
+		scope
+
+		This attribute specifies the scope of the objects created from a particular
+		bean definition and it will be discussed in bean scopes chapter.
+
+		4	
+		constructor-arg
+
+		This is used to inject the dependencies and will be discussed in subsequent chapters.
+
+		5	
+		properties
+
+		This is used to inject the dependencies and will be discussed in subsequent chapters.
+
+		6	
+		autowiring mode
+
+		This is used to inject the dependencies and will be discussed in subsequent chapters.
+
+		7	
+		lazy-initialization mode
+
+		A lazy-initialized bean tells the IoC container to create a bean instance when 
+		it is first requested, rather than at the startup.
+
+		8	
+		initialization method
+
+		A callback to be called just after all necessary properties on the bean have been 
+		set by the container. It will be discussed in bean life cycle chapter.
+
+		9	
+		destruction method
+
+		A callback to be used when the container containing the bean is destroyed. 
+		It will be discussed in bean life cycle chapter.
+		
+	APPLICATION CONTEXT ::
+		The Application Context is Spring's advanced container. Similar to BeanFactory,
+		it can load bean definitions, wire beans together, and dispense beans upon request. 
+		Additionally, it adds more enterprise-specific functionality such as the ability to 
+		resolve textual messages from a properties file and the ability to publish application
+		events to interested event listeners.
+		
+	The most commonly used ApplicationContext implementations are −
+
+			FileSystemXmlApplicationContext − This container loads the definitions of the beans from an XML file. 
+			Here you need to provide the full path of the XML bean configuration file to the constructor.
+
+			ClassPathXmlApplicationContext − This container loads the definitions of the beans from an XML file. 
+			Here you do not need to provide the full path of the XML file but you need to set CLASSPATH properly
+			 because this container will look like bean configuration XML file in CLASSPATH.
+
+			WebXmlApplicationContext − This container loads the XML file with definitions of all beans from within
+			a web application.
+	
+====================================================================================================================	
+			BEAN SCOPE ::
+		In Spring, bean scope is used to decide which type of bean instance should be 
+		return from Spring container back to the caller.
+		
+			1	
+			singleton
+
+			This scopes the bean definition to a single instance per Spring IoC container (default).
+
+			2	
+			prototype
+
+			This scopes a single bean definition to have any number of object instances.
+
+			3	
+			request
+
+			This scopes a bean definition to an HTTP request. Only valid in the context of 
+			a web-aware Spring ApplicationContext.
+
+			4	
+			session
+
+			This scopes a bean definition to an HTTP session. Only valid in the context of
+			a web-aware Spring ApplicationContext.
+			5	
+			global-session
+
+			This scopes a bean definition to a global HTTP session. Only valid in the
+			 context of a web-aware Spring ApplicationContext.
+	
+	<bean id="customerService" class="com.mkyong.customer.services.CustomerService"
+         scope="prototype"/>
+		 
+=============================================================================================================
+			PLACE_HOLDER_CONFIGUREER_SUPPPORT.
+	PlaceholderConfigurerSupport subclass that resolves ${...} placeholders against local
+	properties and/or system properties and environment variables.
+=============================================================================================================
+@ComponentScan
+tells Spring in which packages you have annotated classes which should be managed by Spring.
+
+@EnableAutoConfiguration
+@EnableAutoConfiguration annotation tells Spring Boot to "guess" how you will want to configure Spring,
+ based on the jar dependencies that you have added. For example, If HSQLDB is on your classpath, and you 
+ have not manually configured any database connection beans, then Spring will auto-configure an in-memory database.
+ 
+ @Configuration
+ Annotating a class with the @Configuration indicates that the class can be used by the Spring IoC container 
+ as a source of bean definitions. The @Bean annotation tells Spring that a method annotated with @Bean will 
+ return an object that should be registered as a bean in the Spring application context. 
+ 
+					@Configuration
+					public class HelloWorldConfig {
+					   @Bean 
+					   public HelloWorld helloWorld(){
+						  return new HelloWorld();
+					   }
+					}
+The above code will be equivalent to the following XML configuration −
+									<beans>
+									   <bean id = "helloWorld" class = "com.tutorialspoint.HelloWorld" />
+									</beans>
+									
+@Controller annotation marks a class as a Spring Web MVC controller. 
+It too is a @Component specialization, so beans marked with it are automatically imported into the DI container. 
+When you add the @Controller annotation to a class, you can use another annotation i.e. @RequestMapping; to map
+ URLs to instance methods of a class.
+ 
+ @Service
+ it is same as @component ..additionly it specifies a service layer.
+ 
+ The @Component annotation marks a java class as a bean so the component-scanning mechanism of spring can pick it 
+ up and pull it into the application context. 
+ 
+ @Repository
+ used for dao classes.@Repository is an annotation that marks the specific class as a Data Access Object, 
+ thus clarifying it's role. 
+ 
+Discuss <context:component-scan> and <context:annotation-config>.???
+
+getBean();
+Return an instance, which may be shared or independent, of the specified bean.
+
+11)
+12)
+13).
+========================================================================
+There are 3 ways to a spring bean can be configured-->
+	XML - based configuration.
+	Java Based Configuration
+	Annotation Based Configuration
